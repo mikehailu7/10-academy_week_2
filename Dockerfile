@@ -1,26 +1,12 @@
-FROM python:3.9
+FROM python:3.8-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+WORKDIR /app
 
-# Set the working directory in the container
-WORKDIR /scripts
+COPY ./requirements.txt /app/requirements.txt
 
-# Install psycopg2 dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
-# Install psycopg2
-RUN pip install --no-cache-dir psycopg2-binary
+COPY ./scripts /app
+COPY ./data /app/data
+COPY ./notebooks /app/notebooks
 
-# Copy scripts directory into the container
-COPY . /scripts/
-
-# Expose the port that the application runs on
-EXPOSE 8000
-
-
-CMD ["python", "manage.py"]
